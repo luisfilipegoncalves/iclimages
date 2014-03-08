@@ -1,82 +1,61 @@
 import QtQuick 2.0
-import Qt.labs.folderlistmodel 2.1
+
 
 Rectangle {
     width: 1000
     height: 800
-    color: "gray"
     id: root
+    property Component sourceComp: null
 
-    GridView {
-        id: grid
-        anchors.fill: parent
-        cellWidth: 80
-        cellHeight: 80
+    color: "#676767"
 
-        model: imagesModel
-        delegate: imageDelegate
-
-        Component {
-            id: imageDelegate
-            Rectangle
-            {
-                width: 70
-                height: 70
-                color: "transparent"
-
-                Image {
-                    anchors.fill: parent
-                    anchors.margins: 2
-                    id: img
-                    cache: true
-                    source: filePath
-                    asynchronous: true
-                    fillMode: Image.PreserveAspectCrop
-                    sourceSize.width: 68
-                    sourceSize.height: 68
-
-                }
-            }
-        }
-
+    InfoSideBarView {
+        id: info
+        width: 300
+        height: parent.height
+        anchors.right: parent.right
+        mymodel: imagesModel
     }
 
+    Loader {
+        id: mainLoader
+        height: root.height
+        anchors.left: parent.left
+        anchors.right: info.left
+        sourceComponent:  imagesGridComponent.myComponent
+    }
 
-//    ListView {
-//        id: listView
-//        anchors.fill: parent
+    GridViewMode {
+        id: imagesGridComponent
+        mymodel: imagesModel
+        onShowFullScreenImage: {
+            console.log("imageIndex: " + imageIndex)
+            fullScreenViewComponent.currentImageIndex = imageIndex
+            mainLoader.sourceComponent = fullScreenViewComponent.myComponent
+        }
 
-//        FolderListModel {
-//            id: folderModel
-//            folder: "file:///Users/luisfilipe/Pictures"
-//            nameFilters: [ "*.png", "*.jpg" ]
-//            showDirs: true
-//        }
+        onSelectedImageChanged: {
+            info.currentImageIndex = imageIndex
+        }
+    }
 
-//        Component {
-//            id: fileDelegate
-//            Rectangle {
-//                width: root.width
-//                height: 60
+    FullScreenViewMode {
+        id: fullScreenViewComponent
+        mymodel: imagesModel
+        onExitFullscreen: {
+            console.log("Exiting full screen view with image index: " + imageIndex)
+            mainLoader.sourceComponent = imagesGridComponent.myComponent
+        }
 
-//                MouseArea {
-//                    anchors.fill: parent
-//                    onClicked: {
-//                        console.log(fileName)
-//                        console.log(filePath)
-//                        folderModel.folder = filePath
-//                        console.log("is folder= " + folderModel.isFolder(listView.currentIndex))
-//                    }
-//                }
+        onSelectedImageChanged: {
+            info.currentImageIndex = imageIndex
+        }
+    }
 
-//                Text {
-//                    text: fileName
-//                    anchors.centerIn: parent
-//                }
-//            }
-//        }
-
-//        model: folderModel
-//        delegate: fileDelegate
-//    }
+    Rectangle {
+        width: 1
+        height: parent.height
+        color: "#1b1b1b"
+        anchors.right: info.left
+    }
 }

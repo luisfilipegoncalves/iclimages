@@ -12,12 +12,20 @@ class ImageDatabaseModel : public QStandardItemModel
 public:
     explicit ImageDatabaseModel(QObject *parent = 0);
     
+
+
 protected:
     QHash<int, QByteArray> roleNames() const;
 
 signals:
     
 public slots:
+    const QString getImage(int row);
+    const QString getImageName(int row);
+    const QString getImageDate(int row);
+
+    QStringList getImageModel(int row);
+
 
 private slots:
     void getRootDirectory();

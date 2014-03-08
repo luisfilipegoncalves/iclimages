@@ -21,3 +21,9 @@ QT += widgets
 
 HEADERS += \
     ImageDatabaseModel.h
+
+OTHER_FILES += \
+    qml/iclimages/GridViewMode.qml
+
+RESOURCES += \
+    assets.qrc
